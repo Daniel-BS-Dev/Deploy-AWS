@@ -49,8 +49,8 @@ Permite executar esses comandos várias vezes na mesma conta sem conflitar os no
 
 Também guardaremos as variáveis criadas em um arquivo “envrc”. Se em outro momento você precisar carregar as variáveis, basta rodar o comando: source envrc
 `````
-export ENV_NAME="pocdscatalog"
-export AWS_REGION="us-east-2"
+export ENV_NAME="pocdscatalog"  posso mudar
+export AWS_REGION="us-east-2"   posso mudar
 export UNIQ="dsc${ENV_NAME}$(date +'%Y%m%d')"
 
 echo export UNIQ=$UNIQ | tee envrc

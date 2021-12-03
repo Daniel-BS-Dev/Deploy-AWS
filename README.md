@@ -14,9 +14,8 @@ Sequência automatizada de passos de implantação. Pode implementar integraçã
 https://www.redhat.com/pt-br/topics/devops/what-is-ci-cd
 
 ## Primeiro teste Github Actions
-
+#### hello.yml
 `````
-hello.yml
 name: HelloWorld
 
 on:

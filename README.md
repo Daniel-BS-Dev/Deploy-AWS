@@ -37,8 +37,8 @@ jobs:
 ##### Github Repository secrets
  - Crie um usuário no IAM
  - Configure secrets no repositório Github
-     AWS_ACCESS_KEY_ID
-     AWS_SECRET_ACCESS_KEY
+     * AWS_ACCESS_KEY_ID
+     * AWS_SECRET_ACCESS_KEY
 
 ##### Cloud Shell
 Evita o “Funciona na minha máquina”

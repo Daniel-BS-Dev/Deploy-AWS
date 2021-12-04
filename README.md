@@ -299,7 +299,10 @@ echo export EB_PROFILE=$EB_PROFILE | tee -a envrc
 echo export EB_INSTANCE_TYPES=$EB_INSTANCE_TYPES | tee -a envrc
 echo export EB_SPOT=$EB_SPOT | tee -a envrc
 echo export EB_TEMPLATE=$EB_TEMPLATE | tee -a envrc
-Criar aplicação Elastic Beanstalk
+``````
+
+#### Criar aplicação Elastic Beanstalk
+````
 aws elasticbeanstalk create-application --application-name $EB_APP
 
 aws elasticbeanstalk create-configuration-template \
@@ -333,7 +336,7 @@ aws iam add-role-to-instance-profile --instance-profile-name $EB_PROFILE --role-
 aws s3 mb s3://$EB_BUCKET
 ````````
 
-#### ETAPA 5: Subir “build zero” manual para nuvem
+#### ETAPA 5: No gitBash subir “build zero” manual para nuvem
 `````
 ./mvnw clean package
 ``````
@@ -346,10 +349,13 @@ echo export BUNDLE_NAME=$BUNDLE_NAME | tee -a envrc
 ``````
 #### ETAPA 6: Implantar “build zero” no Elastic Beanstalk
 ##### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
-##### Copiar build para S3 e implantar no Elastic Beanstalk
+##### link do arquivo jar na nuvem
 ``````
 wget https://github.com/devsuperior/dscatalog-resources/raw/master/aws/build0/dscatalog-0.0.1-SNAPSHOT.jar
+``````
 
+##### Copiar build para S3 e implantar no Elastic Beanstalk
+````
 export EB_VERSION="${UNIQ}v$(date +'%Y%m%d%H%M')"
 export EB_VERSION_KEY=$EB_VERSION/dscatalog-0.0.1-SNAPSHOT.jar
 
@@ -393,8 +399,8 @@ aws elasticbeanstalk create-environment \
     --option-settings file://options.txt
 ````````
 
-##### (acompanhe no dashboard do EB)
-#### ETAPA 8: Configurar variáveis de ambiente adicionais da aplicação Elastic Beanstalk
+##### (acompanhe no dashboard do aws Elastic Beanstalk)
+#### ETAPA 8: Configurar variáveis de ambiente adicionais da aplicação aws Elastic Beanstalk "nomeMinhaAplicaçãoeben" configuration
 ##### Nota: as variáveis de conexão com o banco já foram definidas em --option-settings
 
 ##### Configurations -> Software
@@ -403,8 +409,11 @@ aws elasticbeanstalk create-environment \
 - JWT_SECRET
 - JWT_DURATION
 
-##### Restart Application Servers
-#### ETAPA 9: Configurar environment secrets no Github
+#### feita as mudanças voltar ou "nomeMinhaAplicaçãoeben" actions restart para atualizar
+#### Agora pega o endpoiint e teta se esta todo ok no postman
+
+#### ETAPA 9: Configurar environment secrets no Github, para que o git atualize a cada commit
+### Setting -> environment -> new environment -> name -> add secrets
 - EB_APP
 - EB_BUCKET
 - EB_ENV

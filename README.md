@@ -2,7 +2,7 @@
 
 ## CI/CD com AWS e Github Actions
 
-### Serviços AWS
+## Serviços AWS
  - IAM - usuários e permissões
  - EC2 - máquinas
  - Elastic Beanstalk - camada de abstração sobre o EC2
@@ -14,7 +14,7 @@ Sequência automatizada de passos de implantação. Pode implementar integraçã
 https://www.redhat.com/pt-br/topics/devops/what-is-ci-cd
 
 ## Primeiro teste Github Actions
-#### hello.yml
+### hello.yml
 `````
 name: HelloWorld
 
@@ -33,18 +33,18 @@ jobs:
 ``````
 
 ### Passos / scripts para CI/CD com AWS e Github Actions
-#### ETAPA 1: Conexão
-##### Github Repository secrets
+### ETAPA 1: Conexão
+### Github Repository secrets
  - Crie um usuário no IAM
  - Configure secrets no repositório Github
      * AWS_ACCESS_KEY_ID
      * AWS_SECRET_ACCESS_KEY
 
-##### Cloud Shell
+### Cloud Shell
 Evita o “Funciona na minha máquina”
 https://console.aws.amazon.com/cloudshell/home
-#### ETAPA 2: REDE
-##### Identificador Único: UNIQ
+### ETAPA 2: REDE
+### Identificador Único: UNIQ
 Permite executar esses comandos várias vezes na mesma conta sem conflitar os nomes dos recursos, basta mudar o UNIQ
 
 Também guardaremos as variáveis criadas em um arquivo “envrc”. Se em outro momento você precisar carregar as variáveis, basta rodar o comando: source envrc
@@ -61,12 +61,12 @@ source envrc # loads environment variables if disconnected
 
 ``````
 
-##### AWS Teste de Autenticação
+### AWS Teste de Autenticação
 `````
 aws sts get-caller-identity
 ``````
 
-##### Criar AWS VPC - Virtual Private Cloud (rede)
+### Criar AWS VPC - Virtual Private Cloud (rede)
 `````
 export VPC_ID=$(aws ec2 create-vpc \
     --cidr-block 10.0.0.0/16 \
@@ -88,7 +88,7 @@ aws ec2 modify-vpc-attribute \
   ``````
   
 
-##### Criar e conectar o internet gateway
+### Criar e conectar o internet gateway
 `````
 export IGW_ID=$(aws ec2 create-internet-gateway \
     --query "InternetGateway.InternetGatewayId" \
@@ -102,7 +102,7 @@ aws ec2 attach-internet-gateway \
 ``````
 
 
-##### Setup public Route Table
+### Setup public Route Table
 `````
 export RTB_ID=$(aws ec2 create-route-table \
     --vpc-id $VPC_ID \
@@ -118,7 +118,7 @@ aws ec2 create-route \
     
 ``````
 
-##### Public Subnets - availability zone A
+### Public Subnets - availability zone A
 `````
 export CIDR_A=10.0.200.0/24
 
@@ -145,7 +145,7 @@ aws ec2 modify-subnet-attribute  \
     
   ````````
 
-##### Public Subnets - availability zone B
+### Public Subnets - availability zone B
 `````
 export CIDR_B=10.0.201.0/24
 
@@ -171,15 +171,15 @@ aws ec2 modify-subnet-attribute  \
     --map-public-ip-on-launch
  ````````
     
-##### Verificando os recursos criados até aqui
+### Verificando os recursos criados até aqui
 `````
 cat envrc
 ``````
 
 
-##### ETAPA 3: Banco de dados
-###### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
-###### Variáveis do banco RDS
+### ETAPA 3: Banco de dados
+### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
+### Variáveis do banco RDS
 `````
 export RDS_NETGRP=$UNIQ-netgrp
 export RDS_NAME=$UNIQ-postgresql
@@ -197,7 +197,7 @@ echo export RDS_ROOT_USER=$RDS_ROOT_USER | tee -a envrc
 echo export RDS_ROOT_PASSWORD=$RDS_ROOT_PASSWORD | tee -a envrc
 echo export RDS_NETGRP=$RDS_NETGRP | tee -a envrc
 ``````
-##### RDS Networking
+### RDS Networking
 `````
 export RDS_SECG=$(aws ec2 create-security-group \
   --group-name dscatalog-rds-secgrp \
@@ -227,7 +227,7 @@ aws rds create-db-subnet-group \
     --subnet-ids $NET_A $NET_B
 ``````
 
-##### RDS Instance
+### RDS Instance
 `````
 export RDS_ID=$(aws rds create-db-instance \
   --db-name $RDS_DB  \
@@ -248,11 +248,11 @@ export RDS_ID=$(aws rds create-db-instance \
 echo export RDS_ID=$RDS_ID | tee -a envrc
 
 ``````
-##### Aguarde até o banco estar disponível
+### Aguarde até o banco estar disponível
 `````
 aws rds wait db-instance-available --db-instance-identifier $RDS_ID && echo "Pronto"
 ``````
-##### Obtendo a URL do banco criado
+### Obtendo a URL do banco criado
 `````
 export RDS_ENDPOINT=$(aws rds describe-db-instances  \
   --db-instance-identifier $RDS_ID  \
@@ -268,20 +268,20 @@ export RDS_JDBC=jdbc:postgresql://$RDS_ENDPOINT:$RDS_PORT/$RDS_DB
 
 echo export RDS_JDBC=$RDS_JDBC | tee -a envrc
 ``````
-##### Verificando os recursos criados até aqui
+### Verificando os recursos criados até aqui
 `````
 cat envrc
 
 ````````
 
-##### Administração do banco de dados
+### Administração do banco de dados
 - Conecte ao banco usando sua ferramenta favorita
 - Crie a estrutura das tabelas
 - Execute o seed do banco
 
-#### ETAPA 4: Infraestrutura Elastic Beanstalk e S3
-##### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
-##### Variáveis salvas
+### ETAPA 4: Infraestrutura Elastic Beanstalk e S3
+### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
+### Variáveis salvas
 ``````
 export EB_APP=${UNIQ}ebapp 
 export EB_ENV=${UNIQ}ebenv
@@ -301,7 +301,7 @@ echo export EB_SPOT=$EB_SPOT | tee -a envrc
 echo export EB_TEMPLATE=$EB_TEMPLATE | tee -a envrc
 ``````
 
-#### Criar aplicação Elastic Beanstalk
+### Criar aplicação Elastic Beanstalk
 ````
 aws elasticbeanstalk create-application --application-name $EB_APP
 
@@ -312,7 +312,7 @@ aws elasticbeanstalk create-configuration-template \
 ````````
 
 
-##### Security Roles / Instance Profiles
+### Security Roles / Instance Profiles
 `````
 wget https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/aws/eb-ip-policy.json
 
@@ -331,30 +331,30 @@ aws iam add-role-to-instance-profile --instance-profile-name $EB_PROFILE --role-
 ``````
 
 
-##### Criar bucket S3
+### Criar bucket S3
 `````
 aws s3 mb s3://$EB_BUCKET
 ````````
 
-#### ETAPA 5: No gitBash subir “build zero” manual para nuvem
+### ETAPA 5: No gitBash subir “build zero” manual para nuvem
 `````
 ./mvnw clean package
 ``````
 - Subir o bundle (jar) para local público na nuvem (Github, S3, etc.) 
 
-##### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
+### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
 `````
 export BUNDLE_NAME=dscatalog-0.0.1-SNAPSHOT.jar
 echo export BUNDLE_NAME=$BUNDLE_NAME | tee -a envrc
 ``````
-#### ETAPA 6: Implantar “build zero” no Elastic Beanstalk
-##### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
-##### link do arquivo jar na nuvem
+### ETAPA 6: Implantar “build zero” no Elastic Beanstalk
+### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
+### link do arquivo jar na nuvem
 ``````
 wget https://github.com/devsuperior/dscatalog-resources/raw/master/aws/build0/dscatalog-0.0.1-SNAPSHOT.jar
 ``````
 
-##### Copiar build para S3 e implantar no Elastic Beanstalk
+### Copiar build para S3 e implantar no Elastic Beanstalk
 ````
 export EB_VERSION="${UNIQ}v$(date +'%Y%m%d%H%M')"
 export EB_VERSION_KEY=$EB_VERSION/dscatalog-0.0.1-SNAPSHOT.jar
@@ -370,9 +370,9 @@ aws elasticbeanstalk create-application-version \
     
 ``````````
 
-#### ETAPA 7: Criação do “environment” da aplicação Elastic Beanstalk
-##### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
-##### Preparar arquivo de opções
+### ETAPA 7: Criação do “environment” da aplicação Elastic Beanstalk
+### ATENÇÃO: confira se as variáveis dos recursos ainda estão em memória
+### Preparar arquivo de opções
 ``````
 wget https://raw.githubusercontent.com/devsuperior/dscatalog-resources/master/aws/options.txt.env
 
@@ -383,7 +383,7 @@ envsubst < options.txt.env > options.txt
 cat options.txt
 ``````
 
-##### Criar ambiente
+### Criar ambiente
 ``````
 export EB_CNAME="${UNIQ}ebcname$(date +'%Y%m%d%H%M')"
 
@@ -399,20 +399,20 @@ aws elasticbeanstalk create-environment \
     --option-settings file://options.txt
 ````````
 
-##### (acompanhe no dashboard do aws Elastic Beanstalk)
-#### ETAPA 8: Configurar variáveis de ambiente adicionais da aplicação aws Elastic Beanstalk "nomeMinhaAplicaçãoeben" configuration
-##### Nota: as variáveis de conexão com o banco já foram definidas em --option-settings
+### (acompanhe no dashboard do aws Elastic Beanstalk)
+### ETAPA 8: Configurar variáveis de ambiente adicionais da aplicação aws Elastic Beanstalk "nomeMinhaAplicaçãoeben" configuration
+### Nota: as variáveis de conexão com o banco já foram definidas em --option-settings
 
-##### Configurations -> Software
+### Configurations -> Software
 - CLIENT_ID
 - CLIENT_SECRET
 - JWT_SECRET
 - JWT_DURATION
 
-#### feita as mudanças voltar ou "nomeMinhaAplicaçãoeben" actions restart para atualizar
-#### Agora pega o endpoiint e teta se esta todo ok no postman
+### feita as mudanças voltar ou "nomeMinhaAplicaçãoeben" actions restart para atualizar
+### Agora pega o endpoiint e teta se esta todo ok no postman
 
-#### ETAPA 9: Configurar environment secrets no Github, para que o git atualize a cada commit
+### ETAPA 9: Configurar environment secrets no Github, para que o git atualize a cada commit
 ### Setting -> environment -> new environment -> name -> add secrets
 - EB_APP
 - EB_BUCKET
@@ -420,10 +420,10 @@ aws elasticbeanstalk create-environment \
 - AWS_REGION
 - BUNDLE_NAME
 
-#### ETAPA 10: Incluir pipeline Github Actions
+### ETAPA 10: Incluir pipeline Github Actions
 https://github.com/devsuperior/dscatalog-resources/blob/master/aws/main-to-homolog.yml
 
-#### Exterminando os recursos da AWS
+### Exterminando os recursos da AWS
 `````
 source envrc
 
